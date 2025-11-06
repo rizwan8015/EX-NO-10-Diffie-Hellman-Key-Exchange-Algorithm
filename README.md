@@ -19,49 +19,73 @@ To Implement Diffie Hellman Key Exchange Algorithm
 5. Security: The difficulty of computing discrete logarithms ensures that the shared key remains secure even if public values are intercepted.
 
 ## Program:
-~~
+```
 #include <stdio.h>
 #include <math.h>
-long long int power(long long int base, long long int exp, long long int mod) {
+
+long long int mod_exp(long long int base, long long int exp, long long int mod) {
     long long int result = 1;
-    for (int i = 0; i < exp; i++) {
-        result = (result * base) % mod;
+    base = base % mod;
+
+    while (exp > 0) {
+        if (exp % 2 == 1)
+            result = (result * base) % mod;
+        exp = exp >> 1; 
+        base = (base * base) % mod;
     }
     return result;
 }
+
 int main() {
-    long long int P, G, a, b; 
-    long long int A, B, secretA, secretB;
+    long long int P, G;     
+    long long int a, b;     
+    long long int x, y;     
+    long long int ka, kb;   
+
+    printf("=== Diffie-Hellman Key Exchange ===\n");
+
     printf("Enter a prime number (P): ");
     scanf("%lld", &P);
-    printf("Enter a primitive root of %lld (G): ", P);
+
+    printf("Enter a primitive root modulo P (G): ");
     scanf("%lld", &G);
-    printf("Enter private key for Alice (a): ");
+
+    printf("Enter Alice's private key (a): ");
     scanf("%lld", &a);
-    printf("Enter private key for Bob (b): ");
+
+    printf("Enter Bob's private key (b): ");
     scanf("%lld", &b);
-    A = power(G, a, P);
-    B = power(G, b, P);
-    secretA = power(B, a, P);
-    secretB = power(A, b, P);
-    printf("\nPublic Key of Alice (A): %lld", A);
-    printf("\nPublic Key of Bob (B): %lld", B);
-    printf("\n\nSecret Key for Alice: %lld", secretA);
-    printf("\nSecret Key for Bob: %lld\n", secretB);
-    if (secretA == secretB)
-        printf("\nhared secret key successfully established!\n");
+
+    
+    x = mod_exp(G, a, P);  
+    y = mod_exp(G, b, P);  
+
+    printf("\nPublicly shared values:\n");
+    printf("Prime number (P)      : %lld\n", P);
+    printf("Primitive root (G)    : %lld\n", G);
+    printf("Alice's Public Key    : %lld\n", x);
+    printf("Bob's Public Key      : %lld\n", y);
+
+    
+    ka = mod_exp(y, a, P);  
+    kb = mod_exp(x, b, P);  
+
+    printf("\nShared Secret Key computed by Alice: %lld\n", ka);
+    printf("Shared Secret Key computed by Bob  : %lld\n", kb);
+
+    if (ka == kb)
+        printf("\nKey exchange successful! Shared secret = %lld\n", ka);
     else
-        printf("\nError: Keys do not match.\n");
+        printf("\nKey exchange failed. Keys do not match.\n");
+
     return 0;
 }
-~~
-
+```
 
 
 ## Output:
-<img width="1401" height="782" alt="image" src="https://github.com/user-attachments/assets/731af6bb-5242-44d4-9949-dd1fff129fad" />
 
-
+<img width="420" height="355" alt="Screenshot 2025-11-05 112019" src="https://github.com/user-attachments/assets/639db98b-b252-475e-beee-6a3417e9d35b" />
 
 
 ## Result:
